@@ -6,7 +6,7 @@ export default function HomePage() {
   const t = useTranslations();
   return <>
     <Button variant="ghost" size="lg">
-      {t('HomePage.')}
+      {t('HomePage.title')}
     </Button>
     <ThemeToggle />
   </>
