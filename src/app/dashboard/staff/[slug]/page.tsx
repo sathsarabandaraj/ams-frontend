@@ -20,11 +20,14 @@ import {
     Edit, Trash2
 } from "lucide-react"
 import { Button } from "@/components/ui/button";
+import { StaffEditModal } from "./editStaffModal";
 
 export default function StaffProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+    const [staffData, setStaffData] = useState<Staff>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [staffData, setStaffData] = useState<Staff>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
 
     const [slug, setSlug] = useState<string>("");
     useEffect(() => {
@@ -59,20 +62,18 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
     if (error) return <div>{error}</div>;
 
     const handleEdit = () => {
-        // Implement edit functionality
-        console.log("Edit profile")
-    }
+        setIsEditModalOpen(true);
+    };
 
     const handleDelete = () => {
-        // Implement delete functionality
-        console.log("Delete account")
-    }
+        console.log("Delete account");
+    };
 
     return (
         <div className="container mx-auto p-4">
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">{staffData.nameInFull}</h1>
+                    <h1 className="text-3xl font-bold">{staffData.firstName} {staffData.lastName}</h1>
                     <div className="space-x-2">
                         <Button onClick={handleEdit} variant="outline">
                             <Edit className="w-4 h-4 mr-2" />
@@ -170,6 +171,14 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
                     </CardContent>
                 </Card>
             </div>
+            <StaffEditModal
+                staff={staffData}
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false)
+                    fetchStaffData()
+                }}
+            />
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import { Staff } from "@/types/staff";
 import { Student } from "@/types/student";
 import apiClient from "@/util/api-client.util";
 import { DeepPartial } from "react-hook-form";
@@ -27,6 +28,16 @@ export const getStaffByUuid = async (uuid: string) => {
         return response.data.data;
     } catch (error) {
         console.error(error);
+    }
+}
+
+export const updateStaff = async (uuid: string, updatedData: DeepPartial<Staff>) => {
+    try {
+        const response = await apiClient.put(`/staff/${uuid}`, {'user': updatedData});
+        return response.data;
+    } catch (error) {
+        console.error("Error updating staff:", error);
+        throw error;
     }
 }
 

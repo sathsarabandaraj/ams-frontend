@@ -18,7 +18,7 @@ import {
     GraduationCap
 } from "lucide-react"
 import {Button} from "@/components/ui/button";
-import { StudentEditModal } from "./editStudentModel";
+import { StudentEditModal } from "./editStudentModal";
 
 export default function StudentProfilePage({params}: { params: Promise<{ slug: string }> }) {
     const [studentData, setStudentData] = useState<Student>(null);
@@ -70,7 +70,7 @@ export default function StudentProfilePage({params}: { params: Promise<{ slug: s
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Student Profile</h1>
+                <h1 className="text-3xl font-bold">{studentData.firstName} {studentData.lastName}</h1>
                 <div className="space-x-2">
                     <Button onClick={handleEdit} variant="outline">
                         <Edit className="w-4 h-4 mr-2" />
@@ -157,7 +157,10 @@ export default function StudentProfilePage({params}: { params: Promise<{ slug: s
             <StudentEditModal
                 student={studentData}
                 isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
+                onClose={() => {
+                    setIsEditModalOpen(false)
+                    fetchStudentData()
+                }}
             />
         </div>
     )
