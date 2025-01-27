@@ -1,78 +1,79 @@
 "use client";
 
-import {ColumnDef} from "@tanstack/react-table";
-import {Staff} from "@/types/staff";
-import {CheckCircle, MoreHorizontal, XCircle, ArrowUpDown} from "lucide-react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Student } from "@/types/student";
+import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator,
-    DropdownMenuTrigger
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {useRouter} from "next/navigation";
-import {Button} from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
-export const columns: ColumnDef<Staff>[] = [
+export const columns: ColumnDef<Student>[] = [
     {
         accessorKey: "firstName",
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="link"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     First Name
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
+            );
         },
-        enableSorting: true
+        enableSorting: true,
     },
     {
         accessorKey: "lastName",
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="link"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Last Name
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
+            );
         },
-        enableSorting: true
+        enableSorting: true,
     },
     {
         accessorKey: "systemId",
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="link"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     System ID
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
+            );
         },
-        enableSorting: true
+        enableSorting: true,
     },
     {
         accessorKey: "email",
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="link"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Email
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
+            );
         },
-        enableSorting: true
+        enableSorting: true,
     },
     {
         accessorKey: "contactNo",
@@ -81,88 +82,53 @@ export const columns: ColumnDef<Staff>[] = [
     },
     {
         accessorKey: "accountStatus",
-        header: ({column}) => {
+        header: ({ column }) => {
             return (
                 <Button
                     variant="link"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Account Status
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
-        },
-        enableSorting: true
-    },
-    {
-        accessorKey: "staff.isAdmin",
-        header: "Admin",
-        enableSorting: true,
-        cell: ({row}) => {
-            const isTeacher: boolean = row.getValue("staff_isAdmin");
-            return (
-                <div className="flex items-center">
-                    {isTeacher ? (
-                        <CheckCircle/>
-                    ) : (
-                        <XCircle className="text-gray-500"/>
-                    )}
-                </div>
             );
         },
-    },
-    {
-        accessorKey: "staff.isTeacher",
-        header: "Teacher",
         enableSorting: true,
-        cell: ({row}) => {
-            const isTeacher: boolean = row.getValue("staff_isTeacher");
-            return (
-                <div className="flex items-center">
-                    {isTeacher ? (
-                        <CheckCircle/>
-                    ) : (
-                        <XCircle className="text-gray-500"/>
-                    )}
-                </div>
-            );
-        },
     },
     {
         id: "actions",
-        cell: ({row}) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
+        cell: ({ row }) => {
             const router = useRouter();
-            const staff = row.original;
+            const student = row.original;
 
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4"/>
+                            <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => router.push(`staff/${staff.systemId}`)}
+                            onClick={() => router.push(`students/${student.systemId}`)}
                         >
                             View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(staff.systemId)}
+                            onClick={() => navigator.clipboard.writeText(student.systemId)}
                         >
                             Copy System ID
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(staff.email)}
+                            onClick={() => navigator.clipboard.writeText(student.email)}
                         >
                             Copy Email
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(staff.contactNo)}
+                            onClick={() => navigator.clipboard.writeText(student.contactNo)}
                         >
                             Copy Contact No
                         </DropdownMenuItem>

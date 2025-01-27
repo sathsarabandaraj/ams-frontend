@@ -1,14 +1,14 @@
 'use client';
 
 import { CustomPagination } from "@/components/custom-pagination";
-import { getStaff } from "@/service/users.service";
+import { getStudents } from "@/service/users.service";
 import { DataTable } from "@/components/data-table";
-import { columns } from "@/app/dashboard/staff/columns";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie"; // Import useCookies
+import { useCookies } from "react-cookie";
+import {columns} from "@/app/dashboard/students/columns"; // Import useCookies
 
-export default function StaffPage() {
-    const [staffData, setStaffData] = useState<never[]>([]);
+export default function StudentsPage() {
+    const [studentData, setStudentData] = useState<never[]>([]);
     const [totalItemCount, setTotalItemCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,23 +22,23 @@ export default function StaffPage() {
         }
     }, [cookies.pageSize]);
 
-    const fetchStaffData = async () => {
+    const fetchStudentData = async () => {
         try {
             setLoading(true);
-            const response = await getStaff(currentPage, pageSize);
-            setStaffData(response.items);
+            const response = await getStudents(currentPage, pageSize);
+            setStudentData(response.items);
             setTotalItemCount(response.totalItemCount);
             setCurrentPage(response.pageNumber);
         } catch (err) {
             console.error(err);
-            setError("Failed to load staff data");
+            setError("Failed to load student data");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchStaffData();
+        fetchStudentData();
     }, [currentPage, pageSize]); // Trigger fetch when pageSize or currentPage changes
 
     // Handle page size change
@@ -59,9 +59,9 @@ export default function StaffPage() {
         <div className="container mx-auto py-10">
             <DataTable
                 columns={columns}
-                data={staffData}
+                data={studentData}
                 idColumn={"uuid"}
-                extraPath="/dashboard/staff"
+                extraPath="/dashboard/students"
             />
             <div className="h-5" />
             <CustomPagination

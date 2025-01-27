@@ -1,4 +1,4 @@
-export type Staff = {
+export type Student = {
     uuid: string;
     created_at: string;
     updated_at: string;
@@ -13,29 +13,22 @@ export type Staff = {
     dob: string;
     accountStatus: string;
     userType: string;
-    staff: {
+    student: {
         uuid: string;
         created_at: string;
         updated_at: string;
-        postalCode: string;
-        nicNo: string;
-        nicFrontUrl: string;
-        nicBackUrl: string;
-        civilStatus: string;
-        isAdmin: boolean;
-        isTeacher: boolean;
-        hasApprovedInformation: boolean;
-        secondaryContact: {
+        grade: string;
+        emergencyContact: {
             name: string;
             relationship: string;
             contactNo: string;
             email: string;
         };
-        bankDetails: {
-            accountHolderName: string;
-            accountNo: string;
-            bankName: string;
-            branchName: string;
+        guardian: {
+            name: string;
+            relationship: string;
+            contactNo: string;
+            email: string;
         };
     };
 };
