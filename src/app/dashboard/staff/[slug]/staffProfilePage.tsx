@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from "react";
-import {getStaffBySysId} from "@/service/users.service";
+import {getStaffByUuid} from "@/service/users.service";
 import {Staff} from "@/types/staff";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -40,7 +40,7 @@ export default function Page({params}: { params: Promise<{ slug: string }> }) {
         if (!slug) return; // Guard clause if slug isn't available yet
         try {
             setLoading(true);
-            const response = await getStaffBySysId(slug);
+            const response = await getStaffByUuid(slug);
             setStaffData(response); // Assuming the response is the staff data
         } catch (err) {
             console.error(err);
