@@ -6,6 +6,7 @@ import { DataTable } from "@/components/data-table";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import {columns} from "@/app/dashboard/students/columns"; // Import useCookies
+import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function StudentsPage() {
     const [studentData, setStudentData] = useState<never[]>([]);
@@ -48,7 +49,7 @@ export default function StudentsPage() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingAnimation />;
     }
 
     if (error) {

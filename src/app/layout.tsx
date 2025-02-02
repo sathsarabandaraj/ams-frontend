@@ -4,6 +4,7 @@ import {getLocale, getMessages} from "next-intl/server";
 import {NextIntlClientProvider} from "next-intl";
 import {ThemeProvider} from "@/components/theme-provider";
 import React from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -29,6 +30,7 @@ export default async function RootLayout({children,}: Readonly<{ children: React
                 <main>
                     {children}
                 </main>
+                <Toaster />
             </NextIntlClientProvider>
         </ThemeProvider>
         </body>

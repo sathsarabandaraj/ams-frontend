@@ -6,6 +6,7 @@ import { getRfid } from "@/service/rfid.service";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { columns } from "./columns";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function RfidPage() {
     const [rfidData, setRfidData] = useState<never[]>([]);
@@ -25,7 +26,7 @@ export default function RfidPage() {
     const fetchRfidData = async () => {
         try {
             setLoading(true);
-            const response = await getRfid(currentPage, pageSize);
+            const response = await getRfid(currentPage, pageSize, false, true);
             setRfidData(response.items);
             setTotalItemCount(response.totalItemCount);
             setCurrentPage(response.pageNumber);
@@ -48,7 +49,7 @@ export default function RfidPage() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingAnimation />;
     }
 
     if (error) {
@@ -61,7 +62,7 @@ export default function RfidPage() {
                 columns={columns}
                 data={rfidData}
                 idColumn={"rfidTag"}
-                extraPath="/dashboard/system/rfid"
+                extraPath="/dashboard/rfid"
             />
             <div className="h-5" />
             <CustomPagination

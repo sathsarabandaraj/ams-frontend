@@ -30,6 +30,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function StudentProfilePage({ params }: { params: Promise<{ slug: string }> }) {
     const [studentData, setStudentData] = useState<Student>(null);
@@ -71,7 +72,7 @@ export default function StudentProfilePage({ params }: { params: Promise<{ slug:
         }
     }, [slug]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingAnimation />;
     if (error) return (
         <div className="container mx-auto p-4">
             <div className="flex flex-col items-center justify-center min-h-[50vh]">

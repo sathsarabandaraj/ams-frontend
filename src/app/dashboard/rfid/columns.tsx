@@ -32,7 +32,7 @@ export const columns: ColumnDef<Rfid>[] = [
     {
         accessorKey: "isSystem",
         header: "System Tag",
-        enableSorting: true,
+        enableSorting: false,
         cell: ({ row }) => {
             const isTeacher: boolean = row.getValue("isSystem");
             return (

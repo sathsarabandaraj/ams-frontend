@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Rfid } from "@/types/rfid";
 import { getRfidByTag } from "@/service/rfid.service";
 import { useRouter } from "next/navigation";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function RFIDUserCard({ params }: { params: Promise<{ slug: string }> }) {
     const router = useRouter();
@@ -42,7 +43,7 @@ export default function RFIDUserCard({ params }: { params: Promise<{ slug: strin
         }
     }, [slug]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingAnimation />;
     if (error) return <div>{error}</div>;
 
 

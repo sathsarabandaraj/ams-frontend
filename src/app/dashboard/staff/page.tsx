@@ -6,6 +6,7 @@ import { DataTable } from "@/components/data-table";
 import { columns } from "@/app/dashboard/staff/columns";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function StaffPage() {
     const [staffData, setStaffData] = useState<never[]>([]);
@@ -48,7 +49,7 @@ export default function StaffPage() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingAnimation />;
     }
 
     if (error) {
