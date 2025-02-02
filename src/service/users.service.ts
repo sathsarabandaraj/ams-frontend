@@ -27,16 +27,29 @@ export const getStaffByUuid = async (uuid: string) => {
         const response = await apiClient.get(`/staff/${uuid}`);
         return response.data.data;
     } catch (error) {
-        console.error(error);
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 }
 
 export const updateStaff = async (uuid: string, updatedData: DeepPartial<Staff>) => {
     try {
-        const response = await apiClient.put(`/staff/${uuid}`, {'user': updatedData});
+        const response = await apiClient.put(`/staff/${uuid}`, { 'user': updatedData });
         return response.data;
     } catch (error) {
         console.error("Error updating staff:", error);
+        throw error;
+    }
+}
+
+export const deleteStaff = async (uuid: string) => {
+    try {
+        const response = await apiClient.delete(`/staff/${uuid}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting staff:", error);
         throw error;
     }
 }
@@ -65,16 +78,28 @@ export const getStudentByUuid = async (uuid: string) => {
         const response = await apiClient.get(`/student/${uuid}`);
         return response.data.data;
     } catch (error) {
-        console.error(error);
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 }
 
 export const updateStudent = async (uuid: string, updatedData: DeepPartial<Student>) => {
     try {
-        const response = await apiClient.put(`/student/${uuid}`, {'user': updatedData});
+        const response = await apiClient.put(`/student/${uuid}`, { 'user': updatedData });
         return response.data;
     } catch (error) {
         console.error("Error updating student:", error);
         throw error;
     }
 };
+
+export const deleteStudent = async (uuid: string) => {
+    try {
+        const response = await apiClient.delete(`/student/${uuid}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

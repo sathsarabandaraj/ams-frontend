@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
-import { getStaffByUuid } from "@/service/users.service";
+import { getStaffByUuid, deleteStaff } from "@/service/users.service";
 import { Staff } from "@/types/staff";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -21,13 +21,25 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { StaffEditModal } from "./editStaffModal";
+import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function StaffProfilePage({ params }: { params: Promise<{ slug: string }> }) {
     const [staffData, setStaffData] = useState<Staff>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+    const router = useRouter();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const [slug, setSlug] = useState<string>("");
     useEffect(() => {
@@ -43,10 +55,14 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
         try {
             setLoading(true);
             const response = await getStaffByUuid(slug);
-            setStaffData(response); // Assuming the response is the staff data
+            if (!response) {
+                setError("Staff member not found");
+                return;
+            }
+            setStaffData(response);
         } catch (err) {
             console.error(err);
-            setError("Failed to load staff data");
+            setError("An unexpected error occurred. Please try again later.");
         } finally {
             setLoading(false);
         }
@@ -59,14 +75,38 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
     }, [slug]);
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+    if (error) return (
+        <div className="container mx-auto p-4">
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                <h2 className="text-2xl font-semibold text-gray-200 mb-4">{error}</h2>
+                <Button
+                    variant="outline"
+                    onClick={() => router.push('/dashboard/staff')}
+                >
+                    Return to Staff List
+                </Button>
+            </div>
+        </div>
+    );
 
     const handleEdit = () => {
         setIsEditModalOpen(true);
     };
 
     const handleDelete = () => {
-        console.log("Delete account");
+        setIsDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        try {
+            await deleteStaff(slug);
+            router.push('/dashboard/staff'); // Redirect to staff list
+            router.refresh(); // Refresh the page data
+        } catch (error) {
+            console.error("Failed to delete staff:", error);
+            setError("Failed to delete staff member");
+        }
+        setIsDeleteDialogOpen(false);
     };
 
     return (
@@ -179,6 +219,26 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
                     fetchStaffData()
                 }}
             />
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the staff
+                            member&apos;s account and remove their data from the system.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

@@ -1,14 +1,14 @@
 'use client';
 
 import { CustomPagination } from "@/components/custom-pagination";
-import { getStaff } from "@/service/users.service";
 import { DataTable } from "@/components/data-table";
-import { columns } from "@/app/dashboard/staff/columns";
+import { getRfid } from "@/service/rfid.service";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { columns } from "./columns";
 
-export default function StaffPage() {
-    const [staffData, setStaffData] = useState<never[]>([]);
+export default function RfidPage() {
+    const [rfidData, setRfidData] = useState<never[]>([]);
     const [totalItemCount, setTotalItemCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,23 +22,23 @@ export default function StaffPage() {
         }
     }, [cookies.pageSize]);
 
-    const fetchStaffData = async () => {
+    const fetchRfidData = async () => {
         try {
             setLoading(true);
-            const response = await getStaff(currentPage, pageSize);
-            setStaffData(response.items);
+            const response = await getRfid(currentPage, pageSize);
+            setRfidData(response.items);
             setTotalItemCount(response.totalItemCount);
             setCurrentPage(response.pageNumber);
         } catch (err) {
             console.error(err);
-            setError("Failed to load staff data");
+            setError("Failed to load rfid data");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchStaffData();
+        fetchRfidData();
     }, [currentPage, pageSize]); // Trigger fetch when pageSize or currentPage changes
 
     // Handle page size change
@@ -59,9 +59,9 @@ export default function StaffPage() {
         <div className="container mx-auto py-10">
             <DataTable
                 columns={columns}
-                data={staffData}
-                idColumn={"uuid"}
-                extraPath="/dashboard/staff"
+                data={rfidData}
+                idColumn={"rfidTag"}
+                extraPath="/dashboard/system/rfid"
             />
             <div className="h-5" />
             <CustomPagination
