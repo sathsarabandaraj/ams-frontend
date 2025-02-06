@@ -98,7 +98,7 @@ export default function StaffProfilePage({ params }: { params: Promise<{ slug: s
     const fetchFloatingRfids = async () => {
         try {
             setLoadingFloatingRfids(true);
-            const response = await getRfid(0, 100, true, false); // Get floating RFIDs
+            const response = await getRfid(0, 100, true);
             setFloatingRfids(response.items || []);
         } catch (error) {
             console.error("Failed to fetch floating RFIDs:", error);

@@ -31,6 +31,11 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { getRfidsByUser, detachRfid, getRfid, assignRfid } from "@/service/rfid.service";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Search } from "lucide-react";
 
 export default function StudentProfilePage({ params }: { params: Promise<{ slug: string }> }) {
     const [studentData, setStudentData] = useState<Student>(null);
@@ -38,6 +43,13 @@ export default function StudentProfilePage({ params }: { params: Promise<{ slug:
     const [error, setError] = useState<string | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [rfids, setRfids] = useState([]);
+    const [rfidLoading, setRfidLoading] = useState(false);
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [floatingRfids, setFloatingRfids] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loadingFloatingRfids, setLoadingFloatingRfids] = useState(false);
+    const { toast } = useToast();
 
     const [slug, setSlug] = useState<string>("");
     const router = useRouter();
@@ -66,9 +78,35 @@ export default function StudentProfilePage({ params }: { params: Promise<{ slug:
         }
     };
 
+    const fetchRfids = async () => {
+        if (!slug) return;
+        try {
+            setRfidLoading(true);
+            const response = await getRfidsByUser(slug);
+            setRfids(response || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setRfidLoading(false);
+        }
+    };
+
+    const fetchFloatingRfids = async () => {
+        try {
+            setLoadingFloatingRfids(true);
+            const response = await getRfid(0, 100, true);
+            setFloatingRfids(response.items || []);
+        } catch (error) {
+            console.error("Failed to fetch floating RFIDs:", error);
+        } finally {
+            setLoadingFloatingRfids(false);
+        }
+    };
+
     useEffect(() => {
         if (slug) {
             fetchStudentData();
+            fetchRfids();
         }
     }, [slug]);
 
@@ -106,6 +144,47 @@ export default function StudentProfilePage({ params }: { params: Promise<{ slug:
         }
         setIsDeleteDialogOpen(false);
     };
+
+    const handleDetachRfid = async (rfidUuid: string) => {
+        try {
+            await detachRfid(rfidUuid, slug);
+            fetchRfids();
+            toast({
+                title: "Success",
+                description: "RFID detached successfully",
+            });
+        } catch (error) {
+            console.error("Failed to detach RFID:", error);
+            toast({
+                title: "Error",
+                description: "Failed to detach RFID",
+                variant: "destructive",
+            });
+        }
+    };
+
+    const handleAssignRfid = async (rfidUuid: string) => {
+        try {
+            await assignRfid(rfidUuid, slug);
+            await fetchRfids();
+            setShowAssignModal(false);
+            toast({
+                title: "Success",
+                description: "RFID assigned successfully",
+            });
+        } catch (error) {
+            console.error("Failed to assign RFID:", error);
+            toast({
+                title: "Error",
+                description: "Failed to assign RFID",
+                variant: "destructive",
+            });
+        }
+    };
+
+    const filteredRfids = floatingRfids.filter(rfid =>
+        rfid.rfidTag.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="container mx-auto p-4">
@@ -191,6 +270,103 @@ export default function StudentProfilePage({ params }: { params: Promise<{ slug:
                         <InfoItem icon={<Calendar />} label="Updated At"
                             value={new Date(studentData.updated_at).toLocaleString()} />
                         <InfoItem icon={<Users />} label="User Type" value={studentData.userType} />
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="mt-6">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle>RFID Cards</CardTitle>
+                        <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" onClick={() => {
+                                    fetchFloatingRfids();
+                                    setShowAssignModal(true);
+                                }}>
+                                    Assign RFID
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                    <DialogTitle>Assign RFID to Student</DialogTitle>
+                                </DialogHeader>
+
+                                <div className="relative">
+                                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        placeholder="Search RFID tags..."
+                                        className="pl-8"
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="max-h-[400px] overflow-y-auto">
+                                    {loadingFloatingRfids ? (
+                                        <div className="flex justify-center p-4">
+                                            <LoadingAnimation />
+                                        </div>
+                                    ) : filteredRfids.length > 0 ? (
+                                        <div className="space-y-2">
+                                            {filteredRfids.map((rfid) => (
+                                                <div
+                                                    key={rfid.uuid}
+                                                    className="flex items-center justify-between p-3 border rounded hover:bg-accent cursor-pointer"
+                                                >
+                                                    <div>
+                                                        <p className="font-medium">{rfid.rfidTag}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Type: {rfid.metadata?.tagType || '-'}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleAssignRfid(rfid.uuid)}
+                                                    >
+                                                        Assign
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-4 text-muted-foreground">
+                                            No floating RFIDs found
+                                        </div>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </CardHeader>
+                    <CardContent>
+                        {rfidLoading ? (
+                            <div className="flex justify-center p-4">
+                                <LoadingAnimation />
+                            </div>
+                        ) : rfids.length > 0 ? (
+                            <div className="space-y-4">
+                                {rfids.map((rfid) => (
+                                    <div key={rfid.uuid} className="flex items-center justify-between p-2 border rounded">
+                                        <div>
+                                            <p className="font-semibold">Tag: {rfid.rfidTag}</p>
+                                            <p className="text-sm text-muted-foreground">UUID: {rfid.uuid}</p>
+                                        </div>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => handleDetachRfid(rfid.uuid)}
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Detach
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-4 text-muted-foreground">
+                                No RFIDs assigned to this student
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>

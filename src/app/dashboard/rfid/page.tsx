@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { columns } from "./columns";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function RfidPage() {
     const [rfidData, setRfidData] = useState<never[]>([]);
@@ -15,6 +17,7 @@ export default function RfidPage() {
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10);
+    const [showOnlyFloating, setShowOnlyFloating] = useState(false);
     const [cookies, setCookie] = useCookies(["pageSize"]);
 
     useEffect(() => {
@@ -26,13 +29,23 @@ export default function RfidPage() {
     const fetchRfidData = async () => {
         try {
             setLoading(true);
-            const response = await getRfid(currentPage, pageSize, false, true);
+            setError(null);
+            const response = await getRfid(currentPage, pageSize, showOnlyFloating);
+
+            if (!response || !response.items) {
+                setRfidData([]);
+                setTotalItemCount(0);
+                return;
+            }
+
             setRfidData(response.items);
             setTotalItemCount(response.totalItemCount);
             setCurrentPage(response.pageNumber);
         } catch (err) {
             console.error(err);
-            setError("Failed to load rfid data");
+            setError("Failed to load RFID data");
+            setRfidData([]);
+            setTotalItemCount(0);
         } finally {
             setLoading(false);
         }
@@ -40,38 +53,56 @@ export default function RfidPage() {
 
     useEffect(() => {
         fetchRfidData();
-    }, [currentPage, pageSize]); // Trigger fetch when pageSize or currentPage changes
+    }, [currentPage, pageSize, showOnlyFloating]);
 
-    // Handle page size change
     const handlePageSizeChange = (newPageSize: number) => {
         setPageSize(newPageSize);
-        setCookie("pageSize", newPageSize, { maxAge: 60 * 60 * 24 * 365 }); // Store in cookies for 1 year
+        setCookie("pageSize", newPageSize, { maxAge: 60 * 60 * 24 * 365 });
     };
 
     if (loading) {
         return <LoadingAnimation />;
     }
 
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     return (
         <div className="container mx-auto py-10">
-            <DataTable
-                columns={columns}
-                data={rfidData}
-                idColumn={"rfidTag"}
-                extraPath="/dashboard/rfid"
-            />
-            <div className="h-5" />
-            <CustomPagination
-                currentPage={currentPage}
-                totalCount={totalItemCount}
-                pageSize={pageSize}
-                onPageChange={(page) => setCurrentPage(page)}
-                onPageSizeChange={handlePageSizeChange}
-            />
+            <div className="flex items-center space-x-2 mb-4">
+                <Switch
+                    id="floating-mode"
+                    checked={showOnlyFloating}
+                    onCheckedChange={setShowOnlyFloating}
+                />
+                <Label htmlFor="floating-mode">Show only unassigned RFIDs</Label>
+            </div>
+
+            {error ? (
+                <div className="text-center py-8 text-muted-foreground">
+                    {error}
+                </div>
+            ) : rfidData.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                    {showOnlyFloating
+                        ? "No unassigned RFIDs found"
+                        : "No RFIDs found"}
+                </div>
+            ) : (
+                <>
+                    <DataTable
+                        columns={columns}
+                        data={rfidData}
+                        idColumn={"rfidTag"}
+                        extraPath="/dashboard/rfid"
+                    />
+                    <div className="h-5" />
+                    <CustomPagination
+                        currentPage={currentPage}
+                        totalCount={totalItemCount}
+                        pageSize={pageSize}
+                        onPageChange={(page) => setCurrentPage(page)}
+                        onPageSizeChange={handlePageSizeChange}
+                    />
+                </>
+            )}
         </div>
     );
 }

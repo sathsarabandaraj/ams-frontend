@@ -5,7 +5,7 @@ import { getStudents } from "@/service/users.service";
 import { DataTable } from "@/components/data-table";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import {columns} from "@/app/dashboard/students/columns"; // Import useCookies
+import { columns } from "@/app/dashboard/students/columns"; // Import useCookies
 import { LoadingAnimation } from "@/components/loading-animation";
 
 export default function StudentsPage() {
