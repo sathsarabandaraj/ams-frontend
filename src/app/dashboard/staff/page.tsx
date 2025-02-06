@@ -7,8 +7,12 @@ import { columns } from "@/app/dashboard/staff/columns";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function StaffPage() {
+    const router = useRouter();
     const [staffData, setStaffData] = useState<never[]>([]);
     const [totalItemCount, setTotalItemCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -58,6 +62,14 @@ export default function StaffPage() {
 
     return (
         <div className="container mx-auto py-10">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">Staff</h1>
+                <Button onClick={() => router.push('/dashboard/staff/new')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New Staff
+                </Button>
+            </div>
+
             <DataTable
                 columns={columns}
                 data={staffData}

@@ -6,12 +6,7 @@ export type Rfid = {
     updated_at: string;
     rfidTag: string;
     isSystem: boolean;
-    user?: {
-        uuid: string;
-        firstName: string;
-        lastName: string;
-        userType: string;
-    } | null;
+    user?: User | null;
     metadata: { [key: string]: any } | null;
 };
 

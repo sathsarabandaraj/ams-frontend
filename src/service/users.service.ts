@@ -18,7 +18,10 @@ export const getStaff = async (pageNumber: number, pageSize: number) => {
             userUuid: response.data.data.userUuid,
         };
     } catch (error) {
-        console.error(error);
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 };
 
@@ -39,7 +42,9 @@ export const updateStaff = async (uuid: string, updatedData: DeepPartial<Staff>)
         const response = await apiClient.put(`/staff/${uuid}`, { 'user': updatedData });
         return response.data;
     } catch (error) {
-        console.error("Error updating staff:", error);
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 }
@@ -49,7 +54,9 @@ export const deleteStaff = async (uuid: string) => {
         const response = await apiClient.delete(`/staff/${uuid}`);
         return response.data;
     } catch (error) {
-        console.error("Error deleting staff:", error);
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 }
@@ -69,7 +76,10 @@ export const getStudents = async (pageNumber: number, pageSize: number) => {
             userUuid: response.data.data.userUuid,
         };
     } catch (error) {
-        console.error(error);
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 }
 
@@ -90,7 +100,9 @@ export const updateStudent = async (uuid: string, updatedData: DeepPartial<Stude
         const response = await apiClient.put(`/student/${uuid}`, { 'user': updatedData });
         return response.data;
     } catch (error) {
-        console.error("Error updating student:", error);
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 };
@@ -100,6 +112,33 @@ export const deleteStudent = async (uuid: string) => {
         const response = await apiClient.delete(`/student/${uuid}`);
         return response.data;
     } catch (error) {
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 }
+
+export const createStaff = async (staffData: any) => {
+    try {
+        const response = await apiClient.post('/staff', { user: staffData });
+        return response.data.data;
+    } catch (error) {
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
+    }
+};
+
+export const createStudent = async (studentData: any) => {
+    try {
+        const response = await apiClient.post('/student', { user: studentData });
+        return response.data.data;
+    } catch (error) {
+        if (error.response?.status === 404) {
+            return null;
+        }
+        throw error;
+    }
+};

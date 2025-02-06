@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { columns } from "@/app/dashboard/students/columns"; // Import useCookies
 import { LoadingAnimation } from "@/components/loading-animation";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function StudentsPage() {
     const [studentData, setStudentData] = useState<never[]>([]);
@@ -16,6 +19,7 @@ export default function StudentsPage() {
     const [currentPage, setCurrentPage] = useState<number>(0); // 0-based index
     const [pageSize, setPageSize] = useState<number>(10); // Default page size
     const [cookies, setCookie] = useCookies(["pageSize"]);
+    const router = useRouter();
 
     useEffect(() => {
         if (cookies.pageSize) {
@@ -58,6 +62,14 @@ export default function StudentsPage() {
 
     return (
         <div className="container mx-auto py-10">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">Students</h1>
+                <Button onClick={() => router.push('/dashboard/students/new')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New Student
+                </Button>
+            </div>
+
             <DataTable
                 columns={columns}
                 data={studentData}

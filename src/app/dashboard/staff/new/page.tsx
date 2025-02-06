@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { createStudent } from "@/service/users.service";
+import { createStaff } from "@/service/users.service";
 import { LoadingAnimation } from "@/components/loading-animation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AccoutStatus, Gender, UserType } from "@/enum";
+import { AccoutStatus, CivilStatus, Gender, UserType } from "@/enum";
 
-export default function NewStudentPage() {
+export default function NewStaffPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function NewStudentPage() {
         setLoading(true);
 
         const formData = new FormData(event.currentTarget);
-        const studentData = {
+        const staffData = {
             email: formData.get('email'),
             nameInFull: `${formData.get('firstName')} ${formData.get('lastName')}`,
             firstName: formData.get('firstName'),
@@ -33,38 +33,43 @@ export default function NewStudentPage() {
             dob: formData.get('dob'),
             password: "Anka@12345", // Default password
             accountStatus: AccoutStatus.ACTIVE,
-            userType: UserType.STUDENT,
+            userType: UserType.STAFF,
             mainCenter: formData.get('mainCenter'),
-            student: {
-                school: formData.get('school'),
-                grade: formData.get('grade'),
-                preferredMode: formData.get('preferredMode'),
-                guardian: {
-                    name: formData.get('guardianName'),
-                    relationship: formData.get('guardianRelationship'),
-                    contactNo: formData.get('guardianContactNo'),
-                    email: formData.get('guardianEmail'),
+            staff: {
+                postalCode: formData.get('postalCode'),
+                nicNo: formData.get('nicNo'),
+                nicFrontUrl: "https://placehold.co/600x400", // Default placeholder
+                nicBackUrl: "https://placehold.co/600x400", // Default placeholder
+                civilStatus: formData.get('civilStatus'),
+                secondaryContact: {
+                    name: formData.get('secondaryContactName'),
+                    relationship: formData.get('secondaryContactRelationship'),
+                    contactNo: formData.get('secondaryContactNo'),
+                    email: formData.get('secondaryContactEmail'),
                 },
-                emergencyContact: {
-                    name: formData.get('emergencyContactName'),
-                    relationship: formData.get('emergencyContactRelationship'),
-                    contactNo: formData.get('emergencyContactNo'),
-                    email: formData.get('emergencyContactEmail'),
-                }
+                bankDetails: {
+                    accountHolderName: formData.get('accountHolderName'),
+                    accountNo: formData.get('accountNo'),
+                    bankName: formData.get('bankName'),
+                    branchName: formData.get('branchName'),
+                },
+                isAdmin: formData.get('isAdmin') === 'true',
+                isTeacher: formData.get('isTeacher') === 'true',
+                hasApprovedInformation: false
             }
         };
 
         try {
-            const response = await createStudent(studentData);
+            const response = await createStaff(staffData);
             toast({
                 title: "Success",
-                description: "Student created successfully",
+                description: "Staff member created successfully",
             });
-            router.push(`/dashboard/students/${response.uuid}`);
+            router.push(`/dashboard/staff/${response.uuid}`);
         } catch (error) {
             toast({
                 title: "Error",
-                description: "Failed to create student",
+                description: "Failed to create staff member",
                 variant: "destructive",
             });
         } finally {
@@ -78,7 +83,7 @@ export default function NewStudentPage() {
         <div className="container mx-auto py-10">
             <Card>
                 <CardHeader>
-                    <CardTitle>Add New Student</CardTitle>
+                    <CardTitle>Add New Staff Member</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -110,6 +115,10 @@ export default function NewStudentPage() {
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
+                                    <Label htmlFor="postalCode">Postal Code</Label>
+                                    <Input id="postalCode" name="postalCode" required />
+                                </div>
+                                <div className="space-y-2">
                                     <Label htmlFor="gender">Gender</Label>
                                     <Select name="gender" required>
                                         <SelectTrigger>
@@ -128,9 +137,56 @@ export default function NewStudentPage() {
                                     <Label htmlFor="dob">Date of Birth</Label>
                                     <Input id="dob" name="dob" type="date" required />
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium">Staff Information</h3>
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="grade">Grade</Label>
-                                    <Input id="grade" name="grade" type="number" min="1" max="13" required />
+                                    <Label htmlFor="nicNo">NIC Number</Label>
+                                    <Input id="nicNo" name="nicNo" required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="civilStatus">Civil Status</Label>
+                                    <Select name="civilStatus" required>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {Object.values(CivilStatus).map((status) => (
+                                                <SelectItem key={status} value={status}>
+                                                    {status}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Staff Role</Label>
+                                    <Select name="isTeacher" required>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="true">Teacher</SelectItem>
+                                            <SelectItem value="false">Staff</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Admin Status</Label>
+                                    <Select name="isAdmin" required>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select admin status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="true">Admin</SelectItem>
+                                            <SelectItem value="false">Not Admin</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                             <div className="space-y-2">
@@ -140,72 +196,49 @@ export default function NewStudentPage() {
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Academic Information</h3>
+                            <h3 className="text-lg font-medium">Secondary Contact</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="school">School</Label>
-                                    <Input id="school" name="school" required />
+                                    <Label htmlFor="secondaryContactName">Name</Label>
+                                    <Input id="secondaryContactName" name="secondaryContactName" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="preferredMode">Preferred Mode</Label>
-                                    <Select name="preferredMode" required>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select mode" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="onsite">Onsite</SelectItem>
-                                            <SelectItem value="online">Online</SelectItem>
-                                            <SelectItem value="hybrid">Hybrid</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label htmlFor="secondaryContactRelationship">Relationship</Label>
+                                    <Input id="secondaryContactRelationship" name="secondaryContactRelationship" required />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="secondaryContactNo">Contact Number</Label>
+                                    <Input id="secondaryContactNo" name="secondaryContactNo" required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="secondaryContactEmail">Email</Label>
+                                    <Input id="secondaryContactEmail" name="secondaryContactEmail" type="email" required />
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Emergency Contact</h3>
+                            <h3 className="text-lg font-medium">Bank Details</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="emergencyContactName">Name</Label>
-                                    <Input id="emergencyContactName" name="emergencyContactName" required />
+                                    <Label htmlFor="accountHolderName">Account Holder Name</Label>
+                                    <Input id="accountHolderName" name="accountHolderName" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="emergencyContactRelationship">Relationship</Label>
-                                    <Input id="emergencyContactRelationship" name="emergencyContactRelationship" required />
+                                    <Label htmlFor="accountNo">Account Number</Label>
+                                    <Input id="accountNo" name="accountNo" required />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="emergencyContactNo">Contact Number</Label>
-                                    <Input id="emergencyContactNo" name="emergencyContactNo" required />
+                                    <Label htmlFor="bankName">Bank Name</Label>
+                                    <Input id="bankName" name="bankName" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="emergencyContactEmail">Email</Label>
-                                    <Input id="emergencyContactEmail" name="emergencyContactEmail" type="email" required />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Guardian Details</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="guardianName">Name</Label>
-                                    <Input id="guardianName" name="guardianName" required />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="guardianRelationship">Relationship</Label>
-                                    <Input id="guardianRelationship" name="guardianRelationship" required />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="guardianContactNo">Contact Number</Label>
-                                    <Input id="guardianContactNo" name="guardianContactNo" required />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="guardianEmail">Email</Label>
-                                    <Input id="guardianEmail" name="guardianEmail" type="email" required />
+                                    <Label htmlFor="branchName">Branch Name</Label>
+                                    <Input id="branchName" name="branchName" required />
                                 </div>
                             </div>
                         </div>
@@ -218,7 +251,7 @@ export default function NewStudentPage() {
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit">Create Student</Button>
+                            <Button type="submit">Create Staff</Button>
                         </div>
                     </form>
                 </CardContent>

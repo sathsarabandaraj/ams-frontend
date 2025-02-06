@@ -63,6 +63,9 @@ export const detachRfid = async (rfidUuid: string, userUuid: string) => {
         const response = await apiClient.post(`/rfid/${rfidUuid}/unassign`);
         return response.data;
     } catch (error) {
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 };
@@ -72,6 +75,9 @@ export const assignRfid = async (rfidUuid: string, userUuid: string) => {
         const response = await apiClient.post(`/rfid/${rfidUuid}/assign/${userUuid}`);
         return response.data;
     } catch (error) {
+        if (error.response?.status === 404) {
+            return null;
+        }
         throw error;
     }
 };

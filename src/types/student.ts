@@ -1,3 +1,5 @@
+import { AccoutStatus, Gender, UserType } from "@/enum";
+
 export type Student = {
     uuid: string;
     created_at: string;
@@ -9,10 +11,10 @@ export type Student = {
     lastName: string;
     address: string;
     contactNo: string;
-    gender: string;
+    gender: Gender;
     dob: string;
-    accountStatus: string;
-    userType: string;
+    accountStatus: AccoutStatus;
+    userType: UserType;
     student: {
         uuid: string;
         created_at: string;

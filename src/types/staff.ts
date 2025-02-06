@@ -1,3 +1,5 @@
+import { AccoutStatus, CivilStatus, Gender, UserType } from "@/enum";
+
 export type Staff = {
     uuid: string;
     created_at: string;
@@ -9,10 +11,10 @@ export type Staff = {
     lastName: string;
     address: string;
     contactNo: string;
-    gender: string;
+    gender: Gender;
     dob: string;
-    accountStatus: string;
-    userType: string;
+    accountStatus: AccoutStatus;
+    userType: UserType;
     staff: {
         uuid: string;
         created_at: string;
@@ -21,7 +23,7 @@ export type Staff = {
         nicNo: string;
         nicFrontUrl: string;
         nicBackUrl: string;
-        civilStatus: string;
+        civilStatus: CivilStatus;
         isAdmin: boolean;
         isTeacher: boolean;
         hasApprovedInformation: boolean;
