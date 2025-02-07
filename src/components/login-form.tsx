@@ -1,17 +1,17 @@
 'use client';
 
-import {cn} from "@/lib/utils"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
-import {login} from "@/service/auth.service";
-import {ComponentPropsWithoutRef, FormEvent, useState} from "react";
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { login } from "@/service/auth.service";
+import { ComponentPropsWithoutRef, FormEvent, useState } from "react";
 import { useRouter } from 'next/navigation'
 
 export function LoginForm({
-                              className,
-                              ...props
-                          }: ComponentPropsWithoutRef<"form">) {
+    className,
+    ...props
+}: ComponentPropsWithoutRef<"form">) {
     const router = useRouter();
     const [systemId, setSystemId] = useState("");
     const [password, setPassword] = useState("");
@@ -48,7 +48,7 @@ export function LoginForm({
                 <div className="grid gap-2">
                     <Label htmlFor="username">System ID</Label>
                     <Input id="username" type="username" placeholder="cmb-sta-zLtf" value={systemId}
-                           onChange={(e) => setSystemId(e.target.value)} required/>
+                        onChange={(e) => setSystemId(e.target.value)} required />
                 </div>
                 <div className="grid gap-2">
                     <div className="flex items-center">
@@ -61,7 +61,7 @@ export function LoginForm({
                         </a>
                     </div>
                     <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                           required/>
+                        required />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}

@@ -24,19 +24,19 @@ import React from "react";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    idColumn: keyof TData;
+    idColumn?: keyof TData;  // Make idColumn optional
     extraPath?: string;
 }
 
 export function DataTable<TData, TValue>({
-                                             columns,
-                                             data,
-                                             idColumn,
-                                             extraPath = "",
-                                         }: DataTableProps<TData, TValue>) {
+    columns,
+    data,
+    idColumn,
+    extraPath = "",
+}: DataTableProps<TData, TValue>) {
     const router = useRouter();
 
-    const [sorting, setSorting] = React.useState<SortingState>([]);  // Sorting state
+    const [sorting, setSorting] = React.useState<SortingState>([]); // Sorting state
 
     const table = useReactTable({
         data,
@@ -90,8 +90,9 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                // Conditionally add the onClick handler if idColumn exists
                                 onClick={() =>
-                                    router.push(`${extraPath}/${row.original[idColumn]}`)
+                                    idColumn ? router.push(`${extraPath}/${row.original[idColumn]}`) : null
                                 }
                                 className="cursor-pointer"
                             >
