@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { login } from "@/service/auth.service";
 import { ComponentPropsWithoutRef, FormEvent, useState } from "react";
 import { useRouter } from 'next/navigation'
+import { useCookies } from 'react-cookie'
 
 export function LoginForm({
     className,
@@ -16,20 +17,33 @@ export function LoginForm({
     const [systemId, setSystemId] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [, setCookie] = useCookies(['auth_token', 'systemId']);
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setLoading(true);
+        console.log('Submitting login form...'); // Debug log
 
         try {
-            const response = login(systemId, password);
-            console.log("Login successful:", response);
-            router.push("/auth/otp-verification");
-            document.cookie = `systemId=${systemId}; path=/; max-age=375`;
-            // Handle successful login (e.g., save token, redirect, etc.)
+            console.log('Attempting login with systemId:', systemId); // Debug log
+            const response = await login(systemId, password);
+            console.log('Login response:', response); // Debug log
+
+            // Store systemId first
+            setCookie('systemId', systemId, { path: '/', maxAge: 375 });
+
+            // If we have a token, store it
+            if (response?.token) {
+                console.log('Token received, setting auth cookie...'); // Debug log
+                setCookie('auth_token', response.token, { path: '/' });
+            }
+
+            // Proceed to OTP verification regardless of token
+            console.log('Redirecting to OTP verification...'); // Debug log
+            router.replace("/auth/otp-verification");
         } catch (err) {
             console.error("Login failed:", err);
-            // setError(err.response?.data?.message || "Something went wrong");
+            // TODO: Show error message to user
         } finally {
             setLoading(false);
         }

@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "./ui/input-otp"
 import {ComponentPropsWithoutRef, FormEvent, useState} from "react";
-import {redirect, RedirectType, useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {REGEXP_ONLY_DIGITS_AND_CHARS} from "input-otp";
 import {otpVerification} from "@/service/auth.service";
 import {useCookies} from "react-cookie";
@@ -13,29 +13,25 @@ export function OTPVerificationForm({
   className,
   ...props
 }: ComponentPropsWithoutRef<"form">) {
-  const [cookies] = useCookies(['systemId']);
+  const [cookies] = useCookies(['systemId', 'auth_token']);
   const router = useRouter();
   const [otp, setOTP] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (!cookies.systemId) {
-    redirect("/auth/login", RedirectType.replace);
+    router.replace("/auth/login");
+    return null;
   }
-  console.log(cookies.systemId);
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    console.log(otp)
-    console.log(cookies.systemId)
 
     try {
-      const response = await otpVerification(cookies.systemId, otp);
-      console.log("Login successful:", response);
+      await otpVerification(cookies.systemId, otp);
       router.push("/dashboard");
-      // Handle successful login (e.g., save token, redirect, etc.)
     } catch (err) {
-      console.error("Login failed:", err);
-      // setError(err.response?.data?.message || "Something went wrong");
+      console.error("OTP verification failed:", err);
     } finally {
       setLoading(false);
     }
