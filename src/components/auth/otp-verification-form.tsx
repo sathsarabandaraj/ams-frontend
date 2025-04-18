@@ -1,13 +1,13 @@
 'use client';
 
-import {cn} from "@/lib/utils"
-import {Button} from "@/components/ui/button"
-import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "./ui/input-otp"
-import {ComponentPropsWithoutRef, FormEvent, useState} from "react";
-import {useRouter} from "next/navigation";
-import {REGEXP_ONLY_DIGITS_AND_CHARS} from "input-otp";
-import {otpVerification} from "@/service/auth.service";
-import {useCookies} from "react-cookie";
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp"
+import { ComponentPropsWithoutRef, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
+import { otpVerification } from "@/service/auth.service";
+import { useCookies } from "react-cookie";
 
 export function OTPVerificationForm({
   className,

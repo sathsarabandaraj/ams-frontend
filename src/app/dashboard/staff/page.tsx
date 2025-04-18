@@ -74,7 +74,7 @@ export default function StaffPage() {
                 columns={columns}
                 data={staffData}
                 idColumn={"uuid"}
-                extraPath="/dashboard/staff"
+                // extraPath="/dashboard/staff"
             />
             <div className="h-5" />
             <CustomPagination

@@ -17,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import ThemeToggle from "./theme-toggle"
 
 export function NavMain({
   items,
@@ -34,6 +35,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
+      <ThemeToggle />
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (

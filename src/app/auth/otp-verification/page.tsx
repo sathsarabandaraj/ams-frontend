@@ -1,5 +1,5 @@
 import { GalleryVerticalEnd } from "lucide-react"
-import { OTPVerificationForm } from "@/components/otp-verification-form"
+import { OTPVerificationForm } from "@/components/auth/otp-verification-form"
 
 export default function OTPVerificationPage() {
   return (
@@ -17,7 +17,7 @@ export default function OTPVerificationPage() {
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            School of Computing by Anka Technologies.
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

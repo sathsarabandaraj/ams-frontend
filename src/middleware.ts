@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const publicPaths = ['/auth/login']
+const publicPaths = [
+    '/auth/login',
+    '/auth/forgot-password',
+    '/auth/password-reset',
+]
 
 export function middleware(request: NextRequest) {
     const authToken = request.cookies.get('auth_token')
     const systemId = request.cookies.get('systemId')
     const { pathname } = request.nextUrl
 
-    console.log('Middleware check:', {
-        pathname,
-        authToken: !!authToken,
-        systemId: !!systemId
-    });
-
-    // Allow login page
+    // Allow public page
     if (publicPaths.includes(pathname)) {
         return NextResponse.next()
     }

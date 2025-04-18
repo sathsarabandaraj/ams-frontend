@@ -74,7 +74,7 @@ export default function StudentsPage() {
                 columns={columns}
                 data={studentData}
                 idColumn={"uuid"}
-                extraPath="/dashboard/students"
+                // extraPath="/dashboard/students"
             />
             <div className="h-5" />
             <CustomPagination

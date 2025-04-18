@@ -139,7 +139,11 @@ export default function AttendancePage() {
                         <div className="p-4 bg-secondary rounded-lg">
                             <div className="text-sm text-muted-foreground">Days Present</div>
                             <div className="text-2xl font-bold">{monthlyStats.daysPresent}</div>
+                        </div> <div className="p-4 bg-secondary rounded-lg">
+                            <div className="text-sm text-muted-foreground">new  Present</div>
+                            <div className="text-2xl font-bold">{monthlyStats.daysPresent}</div>
                         </div>
+
                     </div>
                 </CardContent>
             </Card>

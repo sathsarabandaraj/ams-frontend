@@ -53,3 +53,23 @@ export const otpVerification = async (systemId: string, otp: string) => {
         throw error;
     }
 };
+
+export const requestPasswordReset = async (systemId: string) => {
+    try {
+        const response = await apiClient.post('/auth/forgot-password', { systemId });
+        return response.data;
+    } catch (error) {
+        console.error('Password reset request failed:', error);
+        throw error;
+    }
+}
+
+export const resetPassword = async (systemId:string,  otp: string, newPassword: string) => {
+    try {
+        const response = await apiClient.post('/auth/reset-password', {systemId, otp, newPassword });
+        return response.data;
+    } catch (error) {
+        console.error('Password reset failed:', error);
+        throw error;
+    }
+}
